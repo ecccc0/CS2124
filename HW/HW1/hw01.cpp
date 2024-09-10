@@ -14,6 +14,7 @@ int main(){
     ifstream ifs;
     ifs.open("encrypted.txt");
     ifs >> distance;
+    distance = distance % 26;
     getline(ifs, line);
     while (getline(ifs, line)){
         result.push_back(lineConversion(line, distance));
