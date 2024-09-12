@@ -1,3 +1,3 @@
 ## CS2124
-Code for CS2124 by Eric
+Eric's code for CS2124
 
