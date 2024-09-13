@@ -51,7 +51,6 @@ void fillVector(vector<Hydrocarbon> &v, ifstream &ifs){
     int cur_c, cur_h;
     bool flag;
     while (ifs >> name >> c >> cur_c >> c >> cur_h){
-        cout << name << " " << cur_c << " " << " " << cur_h << endl;
         // int cursor = 1;
         // string h, c;
         // while (formula[cursor] != 'H'){
