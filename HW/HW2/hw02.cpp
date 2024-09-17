@@ -68,14 +68,14 @@ void battle(Warrior &first, Warrior &second){
         return;
     }
     if (first.strength > second.strength){
-        second.strength = 0;
         first.strength -= second.strength;
+        second.strength = 0;
         cout << first.name << " defeats " << second.name << endl;
         return;
     }
     if (second.strength > first.strength){
-        first.strength = 0;
         second.strength -= first.strength;
+        first.strength = 0;
         cout << second.name << " defeats " << first.name << endl;
         return;
     }
@@ -85,8 +85,7 @@ void status(const vector<Warrior> &list_of_warriors){
     cout << "There are: " << list_of_warriors.size() 
     << " warriors" << endl;
     for (size_t i = 0; i < list_of_warriors.size(); i++){
-        cout << "Warrior: " << list_of_warriors[i].name
-        << ", strength: " << list_of_warriors[i].strength;
+        cout << "Warrior: " << list_of_warriors[i].name << ", strength: " << list_of_warriors[i].strength << endl;
     }
 }
 
