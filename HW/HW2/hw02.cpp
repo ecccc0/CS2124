@@ -4,6 +4,8 @@
 #include <vector>
 using namespace std;
 
+// definition of a warrior containes a string name and an int strength
+
 struct Warrior{
     const string name;
     int strength;
@@ -27,6 +29,7 @@ int main(){
 
     ifs.open("warriors.txt");
     while (ifs >> command){
+        // Cases for each type of command
         if (command == "Warrior"){
             ifs >> name_of_new >> strength_of_new;
             addWarrior(name_of_new, strength_of_new, list_of_warriors);
@@ -36,6 +39,7 @@ int main(){
         }
         if (command == "Battle"){
             ifs >> name_1 >> name_2;
+            // Handle error cases
             if (!warriorInList(name_1, list_of_warriors)){
                 cout << "Error: warrior of name " << name_1 << " does not exist" << endl;
             }
@@ -46,6 +50,8 @@ int main(){
         }
     }
 }
+
+// simulate battle process
 
 void battle(Warrior &first, Warrior &second){
     cout << first.name << " battles " << second.name << endl;
@@ -81,6 +87,8 @@ void battle(Warrior &first, Warrior &second){
     }
 }
 
+// print status
+
 void status(const vector<Warrior> &list_of_warriors){
     cout << "There are: " << list_of_warriors.size() 
     << " warriors" << endl;
@@ -89,6 +97,8 @@ void status(const vector<Warrior> &list_of_warriors){
     }
 }
 
+// function to add new warrior to vector & handle error cases
+
 void addWarrior(const string &name, int strength, vector<Warrior> &list_of_warriors){
     if (warriorInList(name, list_of_warriors)){
         cout << "Error, warrior of name " << name << "already exists" << endl;
@@ -96,6 +106,8 @@ void addWarrior(const string &name, int strength, vector<Warrior> &list_of_warri
     Warrior new_warrior{name, strength};
     list_of_warriors.push_back(new_warrior);
 }
+
+// helper function to check whether a new warrior has the same name as an existing one
 
 bool warriorInList(const string &name, const vector<Warrior> &list_of_warriors){
     for (size_t i = 0; i < list_of_warriors.size(); i++){
@@ -106,11 +118,15 @@ bool warriorInList(const string &name, const vector<Warrior> &list_of_warriors){
     return false;
 }
 
+// helper function to get the index of a warrior from vector
+
 size_t getWarriorIndex(const string &name, const vector<Warrior> &list_of_warriors){
     for (size_t i = 0; i < list_of_warriors.size(); i++){
         if (list_of_warriors[i].name == name){
             return i;
         }
     }
-    return 99999; // to get it to compile
+    return 99999; 
+    // return 99999 to get it to compile, this line will not be reached as the case 
+    // where the name does not exists was handle before calling this function
 }
