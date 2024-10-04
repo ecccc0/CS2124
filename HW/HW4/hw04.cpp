@@ -13,86 +13,99 @@ class Warrior {
 public:
     Warrior(const string& name, double strength)
         : name(name), strength(strength) {}
-
+    // output operator 
     friend ostream& operator<<(ostream& os, const Warrior& warrior);
-
+    // getters
     const string& getName() const { return name; }
     double getStrength() const { return strength; }
-
-    void setStrength(double newStrength) { strength = newStrength; }
     bool isHired() const { return hiered; }
+
+    // setters
+    void setStrength(double newStrength) { strength = newStrength; }
     void setHired(bool status) { hiered = status; }
 
 private:
+    // fields for warrior
     string name;
     double strength;
     bool hiered = false;
+    // boolean to check if warrior is hired
 };
 
 class Noble {
 public:
     Noble(const string& name) : name(name) {}
+    // output operator
     friend ostream& operator<<(ostream& os, const Noble& noble);
-
+    // getters
     const string& getName() const { return name; }
     const vector<Warrior*>& getWarriors() const { return warriors; }
-
+    // hire and fire methods
+    
     bool hire(Warrior& warrior) {
         if (dead) {
             cout << name << " is dead and cannot hire" << endl;
             return false;
-        }
+        } // check if noble is dead
         if (warrior.isHired()) {
             cout << name << " failed to hire " << warrior.getName() << endl;
             return false;
-        }
-        cout << "You're hired, " << warrior.getName() << "! -- " << name << endl;
+        } // check if warrior is hired
         warrior.setHired(true);
         warriors.push_back(&warrior);   
         return true;
+        // successfully hired warrior
     }
 
     bool fire(Warrior& warrior) {
         if (dead) {
             cout << name << " is dead and cannot fire" << endl;
             return false;
-        }
+        } // check if noble is dead
         for (size_t i = 0; i < warriors.size(); ++i) {
+            // loop through warriors to find warrior to fire
             if (warriors[i] == &warrior) {
-                cout << "You don't work for me anymore " << warrior.getName() << "! -- " << name << endl;
+                cout << warrior.getName() << ", you don't work for me anymore! -- " << name << endl;
                 warrior.setHired(false);
                 for (size_t j = i; j < warriors.size() - 1; ++j) {
                     warriors[j] = warriors[j + 1];
-                }
+                } // shift warriors to the left, removing the fired warrior
                 warriors.pop_back();
                 return true;
             }
         }
+        // if warrior is not found
         cout << name << " failed to fire " << warrior.getName() << endl;
         return false;
     }
 
+    // battle method
     void battle(Noble& opponent) {
         cout << name << " battles " << opponent.getName() << endl;
 
-        double strength1 = 0;
-        double ratio;
+        double strength1 = 0, strength2 = 0, ratio;
+        // calculate strength of both nobles's armies
         for (Warrior* warrior : warriors) {
             strength1 += warrior->getStrength();
         }
 
-        double strength2 = 0;
         for (Warrior* warrior : opponent.getWarriors()) {
             strength2 += warrior->getStrength();
         }
-
+        // dead nobles leads to unccessful battle
         if (dead && opponent.dead) {
             cout << "Oh, NO! They're both dead! Yuck!" << endl;
         } else if (dead) {
             cout << "He's dead, " << opponent.getName() << endl;
         } else if (opponent.dead) {
             cout << "He's dead, " << name << endl;
-        } else if (strength1 > strength2) {
+        } 
+
+        // successful battles
+        // update warrior strengths & noble death status
+
+        // noble 1 wins
+        else if (strength1 > strength2) {
             cout << name << " defeats " << opponent.getName() << endl;
             opponent.dead = true;
             ratio = strength2 / strength1;
@@ -102,7 +115,9 @@ public:
             for (Warrior* warrior : opponent.getWarriors()) {
                 warrior->setStrength(0);
             }
-        } else if (strength1 < strength2) {
+        } 
+        // noble 2 wins
+        else if (strength1 < strength2) {
             cout << opponent.getName() << " defeats " << name << endl;
             dead = true;
             ratio = strength1 / strength2;
@@ -112,7 +127,9 @@ public:
             for (Warrior* warrior : warriors) {
                 warrior->setStrength(0);
             }
-        } else {
+        } 
+        // mutual annihilation
+        else {
             cout << "Mutual Annihilation: " << name << " and " << opponent.getName() << " die at each other's hands" << endl;
             dead = true;
             opponent.dead = true;
@@ -125,16 +142,19 @@ public:
         }
     }
 private:
+    // fields for noble
     string name;
     vector<Warrior*> warriors;
     bool dead = false;
+    // boolean to check if noble is dead
 };
 
+// output operator for warrior
 ostream& operator<<(ostream& os, const Warrior& warrior) {
     os << warrior.getName() << ": " << warrior.getStrength();
     return os;
 }
-
+// output operator for noble, using output operator for warrior
 ostream& operator<<(ostream& os, const Noble& noble) {
     os << noble.getName() << " has an army of " << noble.getWarriors().size();
     for (Warrior* warrior : noble.getWarriors()) {
@@ -143,21 +163,21 @@ ostream& operator<<(ostream& os, const Noble& noble) {
     return os;
 }
 
-void status(const vector<Noble>& nobles);
+void status(const vector<Noble*>& nobles);
 
 int main(){
-    vector<Noble> nobles;
+    vector<Noble*> nobles;
     Noble arthur("King Arthur");
     Noble lance("Lancelot du Lac");
     Noble jim("Jim");
     Noble linus("Linus Torvalds");
     Noble bill("Bill Gates");
 
-    nobles.push_back(arthur);
-    nobles.push_back(lance);
-    nobles.push_back(jim);
-    nobles.push_back(linus);
-    nobles.push_back(bill);
+    nobles.push_back(&jim);
+    nobles.push_back(&lance);
+    nobles.push_back(&arthur);
+    nobles.push_back(&linus);
+    nobles.push_back(&bill);
     
 
     Warrior tarzan("Tarzan", 10);
@@ -201,11 +221,9 @@ int main(){
     return 0;
 }
 
-void status(const vector<Noble>& nobles) {
-    for (const Noble& noble : nobles) {
-        cout << noble << endl;
-        for (const Warrior* warrior : noble.getWarriors()) {
-            cout << *warrior << endl;
-        }
+// function to print status of all nobles from vector
+void status(const vector<Noble*>& nobles) {
+    for (const Noble* noble : nobles) {
+        cout << *noble << endl;
     }    
 }
