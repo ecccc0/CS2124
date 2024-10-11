@@ -36,10 +36,9 @@ class Directory {
     // nested Entry class
     // 
     class Entry {
-	friend ostream& operator<<(ostream& os, const Entry& rhs)
-        {
+	friend ostream& operator<<(ostream& os, const Entry& rhs) {
 	    os << rhs.name << ' ' << rhs.room
-	       << ' ' << rhs.phone << ", " << *rhs.pos;
+	       << ' ' << rhs.phone << ", " << *(rhs.pos);
 	    return os;
 	} // Entry op<<
     public:
@@ -109,7 +108,7 @@ public:
                 return entries[i]->getPhone();
             }
         }
-        return size; 
+        return 9999999999; 
     }
 
     // We'll get you started with the add method, but obviously you
