@@ -64,7 +64,8 @@ public:
         for (size_t i = 0; i < warriors.size(); ++i) {
             // loop through warriors to find warrior to fire
             if (warriors[i] == &warrior) {
-                cout << warrior.getName() << ", you don't work for me anymore! -- " << name << endl;
+                cout << warrior.getName() 
+                    << ", you don't work for me anymore! -- " << name << endl;
                 warrior.setHired(false);
                 for (size_t j = i; j < warriors.size() - 1; ++j) {
                     warriors[j] = warriors[j + 1];
@@ -129,7 +130,8 @@ public:
         } 
         // mutual annihilation
         else {
-            cout << "Mutual Annihilation: " << name << " and " << opponent.getName() << " die at each other's hands" << endl;
+            cout << "Mutual Annihilation: " << name << " and " 
+                << opponent.getName() << " die at each other's hands" << endl;
             dead = true;
             opponent.dead = true;
             for (Warrior* warrior : warriors) {
@@ -166,9 +168,12 @@ ostream& operator<<(ostream& os, const Noble& noble) {
 void status(const vector<Noble*>& nobles, const vector<Warrior*>& warriors);
 Noble* noble(const string& name);
 Warrior* warrior(const string& name, double strength);
-bool hire(const string& nobleName, const string& warriorName, vector<Noble*>& nobles, vector<Warrior*>& warriors);
-bool fire(const string& nobleName, const string& warriorName, vector<Noble*>& nobles, vector<Warrior*>& warriors);
-void battle(const string& nobleName1, const string& nobleName2, vector<Noble*>& nobles);
+bool hire(const string& nobleName, const string& warriorName
+    , vector<Noble*>& nobles, vector<Warrior*>& warriors);
+bool fire(const string& nobleName, const string& warriorName
+    , vector<Noble*>& nobles, vector<Warrior*>& warriors);
+void battle(const string& nobleName1
+    , const string& nobleName2, vector<Noble*>& nobles);
 void clear(vector<Noble*>& nobles, vector<Warrior*>& warriors);
 
 int main(){
@@ -179,6 +184,7 @@ int main(){
     ifstream fin;
     bool duplicateNoble, duplicateWarrior;
     fin.open("nobleWarriors.txt");
+    // read commands from file
     while (fin >> command) {
         duplicateNoble = false;
         duplicateWarrior = false;
@@ -186,10 +192,11 @@ int main(){
             fin >> name;
             for (Noble* noble : nobles) {
                 if (noble->getName() == name) {
-                    cout << "Attempting to create duplicate noble: " << name << endl;
+                    cout << "Attempting to create duplicate noble: " 
+                        << name << endl;
                     duplicateNoble = true;
                     break;
-                }
+                } // check for duplicate noble
             }
             if (!duplicateNoble){
                 nobles.push_back(noble(name));
@@ -199,23 +206,27 @@ int main(){
             fin  >> name >> strength;
             for (Warrior* warrior : warriors) {
                 if (warrior->getName() == name) {
-                    cout << "Attempting to create duplicate warrior: " << name << endl;
+                    cout << "Attempting to create duplicate warrior: " 
+                        << name << endl;
                     duplicateWarrior = true;
                     break;
                 }
-            }
+            } // check for duplicate warrior
             if (!duplicateWarrior) {
                 warriors.push_back(warrior(name, strength));
             }
         } else if (command == "Hire") {
             fin >> nobleName >> warriorName;
-            hire(nobleName, warriorName, nobles, warriors);
+            hire(nobleName, warriorName, nobles, warriors); 
+            // call hire function that calls noble hire method
         } else if (command == "Fire") {
             fin >> nobleName >> warriorName;
-            fire(nobleName, warriorName, nobles, warriors);
+            fire(nobleName, warriorName, nobles, warriors); 
+            // call fire function that calls noble fire method
         } else if (command == "Battle") {
             fin >> nobleName1 >> nobleName2;
-            battle(nobleName1, nobleName2, nobles);
+            battle(nobleName1, nobleName2, nobles); 
+            // call battle function that calls noble battle method
         } else if (command == "Status") {
             status(nobles, warriors);
         } else if (command == "Clear") {
@@ -242,24 +253,26 @@ void status(const vector<Noble*>& nobles, const vector<Warrior*>& warriors) {
             allHired = false;
             cout << "    " << *warrior << endl;
         }
-    }
+    } // check if all warriors are hired
     if (allHired) {
         cout << "NONE" << endl;
     }
 }
 
 Noble* noble(const string& name) {
-    
     Noble* noble = new Noble(name);
     return noble;
+    // errors handled in main
 }
 
 Warrior* warrior(const string& name, double strength) {
     Warrior* warrior = new Warrior(name, strength);
     return warrior;
+    // errors handled in main
 }
 
-bool hire(const string& nobleName, const string& warriorName, vector<Noble*>& nobles, vector<Warrior*>& warriors) {
+bool hire(const string& nobleName, const string& warriorName
+    , vector<Noble*>& nobles, vector<Warrior*>& warriors) {
     for (Noble* noble : nobles) {
         if (noble->getName() == nobleName) {
             for (Warrior* warrior : warriors) {
@@ -271,10 +284,12 @@ bool hire(const string& nobleName, const string& warriorName, vector<Noble*>& no
         }
     }
     cout << "Attempting to hire using unknown noble: " << nobleName << endl;
+    // only check for unknown warrior, noble. Other errors handled in Noble hire method
     return false;
 }
 
-bool fire(const string& nobleName, const string& warriorName, vector<Noble*>& nobles, vector<Warrior*>& warriors) {
+bool fire(const string& nobleName, const string& warriorName
+    , vector<Noble*>& nobles, vector<Warrior*>& warriors) {
     for (Noble* noble : nobles) {
         if (noble->getName() == nobleName) {
             for (Warrior* warrior : warriors) {
@@ -282,14 +297,18 @@ bool fire(const string& nobleName, const string& warriorName, vector<Noble*>& no
                     return noble->fire(*warrior);
                 }
             }
-            cout << "Attempting to fire unknown warrior: " << warriorName << endl;
+            cout << "Attempting to fire unknown warrior: " 
+                << warriorName << endl;
         }
     }
     cout << "Attempting to fire using unknown noble: " << nobleName << endl;
+    // Only check for unknown warrior, noble. 
+    // Other errors handled in Noble fire method
     return false;
 }
 
-void battle(const string& nobleName1, const string& nobleName2, vector<Noble*>& nobles) {
+void battle(const string& nobleName1, const string& nobleName2
+    , vector<Noble*>& nobles) {
     for (Noble* noble1 : nobles) {
         if (noble1->getName() == nobleName1) {
             for (Noble* noble2 : nobles) {
@@ -298,14 +317,18 @@ void battle(const string& nobleName1, const string& nobleName2, vector<Noble*>& 
                     return;
                 }
             }
-            cout << "Attempting to battle using unknown noble: " << nobleName2 << endl;
+            cout << "Attempting to battle using unknown noble: " 
+                << nobleName2 << endl;
         }
     }
-    cout << "Attempting to battle using unknown noble: " << nobleName1 << endl;
+    cout << "Attempting to battle using unknown noble: " 
+        << nobleName1 << endl;
+    // only check for unknown noble. Other errors handled in Noble battle method
     return;
 }
 
 void clear(vector<Noble*>& nobles, vector<Warrior*>& warriors) {
+    // delete all used memory on heap
     for (Noble* noble : nobles) {
         delete noble;
     }
