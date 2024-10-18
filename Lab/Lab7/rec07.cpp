@@ -101,6 +101,10 @@ void normalize(Rational& rhs) {
     int gcd = greatestCommonDivisor(rhs.numerator, rhs.denominator);
     rhs.numerator /= gcd;
     rhs.denominator /= gcd;
+    if (rhs.denominator < 0) {
+        rhs.denominator *= -1;
+        rhs.numerator *= -1;
+    }
 }
 
 Rational& operator--(Rational& rhs);
@@ -156,7 +160,8 @@ int main()
     // following shouldn't.
     // But some compiler vendors might let it...  Is your compiler
     // doing the right thing? Why shouldn't it compile?
-    //cout << "a-- -- = " << (a-- --) << endl;
+    // cout << "a-- -- = " << (a-- --) << endl;
+    cout << "-- --a: "<< (-- --a) << endl;
     cout << "a = " << a << endl;
 
 
@@ -205,11 +210,14 @@ int greatestCommonDivisor(int x, int y)
 // their definitions here...
 Rational& operator--(Rational& rhs) {
     rhs += -1;
+    normalize(rhs);
     return rhs;
 }
 
 Rational operator--(Rational& rhs, int dummy) {
     Rational original(rhs);
     --rhs;
+    normalize(rhs);
     return original;
 }
+
