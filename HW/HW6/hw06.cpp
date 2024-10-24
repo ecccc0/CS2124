@@ -13,32 +13,40 @@ using namespace std;
 // Put your class and all function definitions here.
 size_t firstNonZeroInStr(const string& str);
 
-class BigUnsigned {
+class BigUnsigned
+{
     vector<int> value; 
     public:
-    BigUnsigned(const int val = 0) {
+    BigUnsigned(const int val = 0)
+    {
         int cur, val_copy = val;
-        if (val == 0) {
+        if (val == 0)
+        {
             value.push_back(0);
         }
-        while (val_copy != 0) {
+        while (val_copy != 0)
+        {
             cur = val_copy % 10;
             val_copy /= 10;
             value.push_back(cur);
         }
     }
-    BigUnsigned(const string& digits) {
-        int converted_int;
+    BigUnsigned(const string& digits)
+    {
         size_t first_non_zero = firstNonZeroInStr(digits);
-        if (digits[0] < 48 || digits[0] > 57) {
+        if (digits[0] < 48 || digits[0] > 57)
+        {
             value.push_back(0);
         }
-        else {
-            for (size_t i = digits.size() - 1; i >= first_non_zero; i--) {
-                if (digits[0] < 48 || digits[0] > 57) {
+        else
+        {
+            for (size_t i = digits.size() - 1; i >= first_non_zero; i--)
+            {
+                if (digits[0] < 48 || digits[0] > 57)
+                {
                     return;
                 }
-                converted_int = digits[i] - 48;
+                int converted_int = digits[i] - 48;
                 value.push_back(converted_int);
             }
         }
@@ -46,63 +54,180 @@ class BigUnsigned {
     friend ostream& operator<<(ostream& os, const BigUnsigned& rhs);
     friend bool operator==(const BigUnsigned& lhs, const BigUnsigned& rhs);
     friend BigUnsigned operator+(const BigUnsigned& lhs, const BigUnsigned& rhs);
+    friend bool operator!=(const BigUnsigned& lhs, const BigUnsigned& rhs);
+    friend bool operator<(const BigUnsigned& lhs, const BigUnsigned& rhs);
+    friend bool operator>(const BigUnsigned& lhs, const BigUnsigned& rhs);
+    friend bool operator<=(const BigUnsigned& lhs, const BigUnsigned& rhs);
+    friend bool operator>=(const BigUnsigned& lhs, const BigUnsigned& rhs);
 
-    BigUnsigned operator+=(const BigUnsigned& rhs) {
+    BigUnsigned operator+=(const BigUnsigned& rhs)
+    {
         int carry = 0;
         int cur_res = 0;
         size_t idx = 0;
-        while (idx < this->value.size() && idx < rhs.value.size()) {
-            cur_res = (carry + this->value[idx] + rhs.value[idx]) % 10;
-            carry = (carry + this->value[idx] + rhs.value[idx]) / 10;
-            this->value[idx] = cur_res;
+        while (idx < this->value.size() && idx < rhs.value.size())
+        {
+            cur_res = (carry + this->value[this->value.size() - 1 - idx] +
+                rhs.value[rhs.value.size() - 1 - idx]) % 10;
+            carry = (carry + this->value[this->value.size() - 1 - idx] +
+                rhs.value[rhs.value.size() - 1 - idx]) / 10;
+            this->value[this->value.size() - 1 - idx] = cur_res;
+            idx++;
         }
-        // Did not solve the problem where idx hits limit and has a carry
-        if (carry == 1) {
-            this->value.push_back(1);
+        if (carry == 1)
+        {
+            this->value.insert(this->value.begin(), 1);
         }
-        if (this->value.size() == rhs.value.size()) {
+        if (this->value.size() == rhs.value.size())
+        {
             return *this;
         }
-        for (size_t i = idx + 1; i < rhs.value.size(); i++) {
+        for (size_t i = idx + 1; i < rhs.value.size(); i++)
+        {
             this->value.push_back(rhs.value[i]);
         }
         return *this;
     }
-    // to be implemented
-    BigUnsigned operator++() {
-        int carry = 0;
-        
+
+    BigUnsigned operator++()
+    {
+        this->operator+=(BigUnsigned(1));
+        return *this;
     }
+
+    BigUnsigned operator++(int dummy)
+    {
+        BigUnsigned original(*this);
+        ++(*this);
+        return original;
+    }
+
+    explicit operator bool() const
+    {
+        return (*this != BigUnsigned(0));
+    }
+
 };
 
-BigUnsigned operator+(const BigUnsigned& lhs, const BigUnsigned& rhs) {
+BigUnsigned operator+(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
     int carry = 0;
     int cur_res = 0;
     BigUnsigned result = BigUnsigned();
     result.value.pop_back();
     size_t idx = 0;
-    while (idx < lhs.value.size() && idx < rhs.value.size()) {
-        cur_res = (carry + lhs.value[idx] + rhs.value[idx]) % 10;
-        carry = (carry + lhs.value[idx] + rhs.value[idx]) / 10;
+    while (idx < lhs.value.size() && idx < rhs.value.size())
+    {
+        cur_res = (carry + lhs.value[lhs.value.size() - 1 - idx] +
+            rhs.value[rhs.value.size() - 1- idx]) % 10;
+        carry = (carry + lhs.value[lhs.value.size() - 1 - idx] +
+            rhs.value[rhs.value.size() - 1 - idx]) / 10;
         result.value.push_back(cur_res);
+        ++idx;
     }
-    if (lhs.value.size() == rhs.value.size()) {
+    if (lhs.value.size() == rhs.value.size())
+    {
         return result;
     }
     // Did not solve the problem where idx hits limit and has a carry
-    else if (lhs.value.size() > rhs.value.size()) {
-        for (size_t i = idx + 1; i < lhs.value.size(); i++) {
+    else if (lhs.value.size() > rhs.value.size())
+    {
+        for (size_t i = idx + 1; i < lhs.value.size(); i++)
+        {
             result.value.push_back(lhs.value[i]);
         }
     }
-    else {
-        for (size_t i = idx + 1; i < rhs.value.size(); i++) {
+    else
+    {
+        for (size_t i = idx + 1; i < rhs.value.size(); i++)
+        {
             result.value.push_back(rhs.value[i]);
         }
     }
     return result;
 }
 
+ostream& operator<<(ostream& os, const BigUnsigned& rhs)
+{
+    for (size_t i = 0; i < rhs.value.size(); i++)
+    {
+        cout << rhs.value[rhs.value.size() - 1 - i];
+    }
+    return os;
+}
+
+
+bool operator==(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    if (lhs.value.size() != rhs.value.size())
+    {
+        return false;
+    }
+    for (size_t i = 0; i < lhs.value.size(); i++)
+    {
+        if (lhs.value[i] != rhs.value[i])
+        {
+            return false;
+        }
+
+    }
+    return true;
+}
+
+bool operator!=(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    return !(lhs == rhs);
+}
+
+bool operator<(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    if (lhs.value.size() > rhs.value.size())
+    {
+        return false;
+    }
+    else if (lhs.value.size() < rhs.value.size())
+    {
+        return true;
+    }
+    for (size_t i = 0; i < lhs.value.size(); i--)
+    {
+        if (lhs.value[i] < rhs.value[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool operator>(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    if (lhs.value.size() < rhs.value.size())
+    {
+        return false;
+    }
+    else if (lhs.value.size() > rhs.value.size())
+    {
+        return true;
+    }
+    for (size_t i = 0; i < lhs.value.size(); i++)
+    {
+        if (lhs.value[i] > rhs.value[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool operator<=(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    return !(lhs > rhs);
+}
+
+bool operator>=(const BigUnsigned& lhs, const BigUnsigned& rhs)
+{
+    return !(lhs < rhs);
+}
 
 
 

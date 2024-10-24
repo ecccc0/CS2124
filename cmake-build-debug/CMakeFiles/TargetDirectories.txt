@@ -1,0 +1,3 @@
+C:/Users/ching/projects/CS2124/cmake-build-debug/CMakeFiles/CS2124.dir
+C:/Users/ching/projects/CS2124/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/ching/projects/CS2124/cmake-build-debug/CMakeFiles/rebuild_cache.dir
