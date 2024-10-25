@@ -147,6 +147,13 @@ Course::Course(const string& courseName) : name(courseName) {}
 const string& Course::getName() const {return name;}
 bool Course::addStudent(Student* student)
 {
+    for (Student* s : students)
+    {
+        if (s == student)
+        {
+            return false;
+        }
+    }
     students.push_back(student);
-    return ;
+    return true;
 }
