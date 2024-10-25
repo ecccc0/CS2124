@@ -49,11 +49,11 @@ cmake_ninja_workdir = C$:/Users/ching/projects/CS2124/cmake-build-debug/
 
 build cmake_object_order_depends_target_CS2124: phony || .
 
-build CMakeFiles/CS2124.dir/HW/HW6/hw06.cpp.obj: CXX_COMPILER__CS2124_unscanned_Debug C$:/Users/ching/projects/CS2124/HW/HW6/hw06.cpp || cmake_object_order_depends_target_CS2124
-  DEP_FILE = CMakeFiles\CS2124.dir\HW\HW6\hw06.cpp.obj.d
+build CMakeFiles/CS2124.dir/Lab/Lab8/rec08.cpp.obj: CXX_COMPILER__CS2124_unscanned_Debug C$:/Users/ching/projects/CS2124/Lab/Lab8/rec08.cpp || cmake_object_order_depends_target_CS2124
+  DEP_FILE = CMakeFiles\CS2124.dir\Lab\Lab8\rec08.cpp.obj.d
   FLAGS = -g -std=gnu++14 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\CS2124.dir
-  OBJECT_FILE_DIR = CMakeFiles\CS2124.dir\HW\HW6
+  OBJECT_FILE_DIR = CMakeFiles\CS2124.dir\Lab\Lab8
 
 
 # =============================================================================
@@ -63,7 +63,7 @@ build CMakeFiles/CS2124.dir/HW/HW6/hw06.cpp.obj: CXX_COMPILER__CS2124_unscanned_
 #############################################
 # Link the executable CS2124.exe
 
-build CS2124.exe: CXX_EXECUTABLE_LINKER__CS2124_Debug CMakeFiles/CS2124.dir/HW/HW6/hw06.cpp.obj
+build CS2124.exe: CXX_EXECUTABLE_LINKER__CS2124_Debug CMakeFiles/CS2124.dir/Lab/Lab8/rec08.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\CS2124.dir
