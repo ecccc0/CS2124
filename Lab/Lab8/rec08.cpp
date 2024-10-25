@@ -163,7 +163,9 @@ ostream& operator<<(ostream& os, const Registrar& rhs)
 
 
 Course::Course(const string& courseName) : name(courseName) {}
+
 const string& Course::getName() const {return name;}
+
 bool Course::addStudent(Student* student)
 {
     for (Student* s : students)
@@ -209,7 +211,7 @@ void Student::removedFromCourse(Course* course)
     {
         if (courses[i] == course)
         {
-            courses[i] = courses.back();
+            courses[i] = courses[courses.size()-1];
             courses.pop_back();
             return;
         }
@@ -270,7 +272,7 @@ bool Registrar::cancelCourse(const string& courseName)
     }
     courses[courseIndex]->removeStudentsFromCourse();
     delete courses[courseIndex];
-    courses[courseIndex] = courses.back();
+    courses[courseIndex] = courses[courses.size()-1];
     courses.pop_back();
     return true;
 }
