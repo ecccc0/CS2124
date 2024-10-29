@@ -12,16 +12,17 @@ using namespace std;
 
 // Put your class and all function definitions here.
 size_t firstNonZeroInStr(const string& str);
+size_t max(size_t a, size_t b);
 
 class BigUnsigned
 {
-    vector<int> value; 
     public:
     BigUnsigned(const int val = 0)
     {
         int cur, val_copy = val;
         if (val == 0)
         {
+            // default value
             value.push_back(0);
         }
         while (val_copy != 0)
@@ -29,6 +30,8 @@ class BigUnsigned
             cur = val_copy % 10;
             val_copy /= 10;
             value.push_back(cur);
+            // append the current digit to the vector,
+            // starting from the least significant digit
         }
     }
     BigUnsigned(const string& digits)
@@ -36,21 +39,25 @@ class BigUnsigned
         size_t first_non_zero = firstNonZeroInStr(digits);
         if (digits[0] < 48 || digits[0] > 57)
         {
+            // if the first character is not a digit
             value.push_back(0);
         }
         else
         {
-            for (size_t i = digits.size() - 1; i >= first_non_zero; i--)
+            for (size_t i = 0; i < digits.size() - first_non_zero - 1; i++)
             {
-                if (digits[0] < 48 || digits[0] > 57)
+                if (digits[digits.size() - i - 1] < 48 ||
+                    digits[digits.size() - i - 1] > 57)
                 {
-                    return;
+                    // the first non-ditig character encountered
+                    break;
                 }
-                int converted_int = digits[i] - 48;
-                value.push_back(converted_int);
+                value.push_back(digits[digits.size() - i - 1] - 48);
+                // append the current digit to the vector, converting it to an int
             }
         }
     }
+    // friend functions
     friend ostream& operator<<(ostream& os, const BigUnsigned& rhs);
     friend bool operator==(const BigUnsigned& lhs, const BigUnsigned& rhs);
     friend BigUnsigned operator+(const BigUnsigned& lhs, const BigUnsigned& rhs);
@@ -62,36 +69,36 @@ class BigUnsigned
 
     BigUnsigned operator+=(const BigUnsigned& rhs)
     {
+        size_t max_size = max(value.size(), rhs.value.size());
         int carry = 0;
-        int cur_res = 0;
-        size_t idx = 0;
-        while (idx < this->value.size() && idx < rhs.value.size())
-        {
-            cur_res = (carry + this->value[this->value.size() - 1 - idx] +
-                rhs.value[rhs.value.size() - 1 - idx]) % 10;
-            carry = (carry + this->value[this->value.size() - 1 - idx] +
-                rhs.value[rhs.value.size() - 1 - idx]) / 10;
-            this->value[this->value.size() - 1 - idx] = cur_res;
-            idx++;
+
+        // Make sure both vectors are the same size
+        if (value.size() < max_size) {
+            value.resize(max_size, 0);
         }
-        if (carry == 1)
-        {
-            this->value.insert(this->value.begin(), 1);
+
+        // Perform the addition in-place
+        for (size_t i = 0; i < max_size; ++i) {
+            int digitA = value[i];
+            int digitB = (i < rhs.value.size()) ? rhs.value[i] : 0;
+
+            int sum = digitA + digitB + carry;
+            value[i] = sum % 10; // Update the current digit
+            carry = sum / 10;     // Calculate the carry
         }
-        if (this->value.size() == rhs.value.size())
-        {
-            return *this;
+
+        // If there's a leftover carry, append it as a new digit
+        if (carry > 0) {
+            value.push_back(carry);
         }
-        for (size_t i = idx + 1; i < rhs.value.size(); i++)
-        {
-            this->value.push_back(rhs.value[i]);
-        }
+
         return *this;
     }
 
     BigUnsigned operator++()
     {
         this->operator+=(BigUnsigned(1));
+        // just call the += operator with 1
         return *this;
     }
 
@@ -100,50 +107,42 @@ class BigUnsigned
         BigUnsigned original(*this);
         ++(*this);
         return original;
+        // support for postfix increment
     }
 
     explicit operator bool() const
     {
         return (*this != BigUnsigned(0));
+        // returns true if the value is not zero
     }
-
+    private:
+    vector<int> value; 
 };
 
 BigUnsigned operator+(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
-    int carry = 0;
-    int cur_res = 0;
-    BigUnsigned result = BigUnsigned();
+    // store the result in a new BigUnsigned object
+    BigUnsigned result;
     result.value.pop_back();
-    size_t idx = 0;
-    while (idx < lhs.value.size() && idx < rhs.value.size())
-    {
-        cur_res = (carry + lhs.value[lhs.value.size() - 1 - idx] +
-            rhs.value[rhs.value.size() - 1- idx]) % 10;
-        carry = (carry + lhs.value[lhs.value.size() - 1 - idx] +
-            rhs.value[rhs.value.size() - 1 - idx]) / 10;
-        result.value.push_back(cur_res);
-        ++idx;
+    int carry = 0;
+    size_t max_size = max(lhs.value.size(), rhs.value.size());
+
+    for (size_t i = 0; i < max_size; ++i) {
+        int digitA = (i < lhs.value.size()) ? lhs.value[i] : 0;
+        int digitB = (i < rhs.value.size()) ? rhs.value[i] : 0;
+        int sum = digitA + digitB + carry;
+        // add the two digits and the carry
+        result.value.push_back(sum % 10);
+        // append the current one's digit to the result
+        carry = sum / 10;
+        // compute the carry
     }
-    if (lhs.value.size() == rhs.value.size())
-    {
-        return result;
+
+    if (carry > 0) {
+        result.value.push_back(carry);
+        // if there is a carry left, append it to the result
     }
-    // Did not solve the problem where idx hits limit and has a carry
-    else if (lhs.value.size() > rhs.value.size())
-    {
-        for (size_t i = idx + 1; i < lhs.value.size(); i++)
-        {
-            result.value.push_back(lhs.value[i]);
-        }
-    }
-    else
-    {
-        for (size_t i = idx + 1; i < rhs.value.size(); i++)
-        {
-            result.value.push_back(rhs.value[i]);
-        }
-    }
+
     return result;
 }
 
@@ -151,7 +150,8 @@ ostream& operator<<(ostream& os, const BigUnsigned& rhs)
 {
     for (size_t i = 0; i < rhs.value.size(); i++)
     {
-        cout << rhs.value[rhs.value.size() - 1 - i];
+        // backwards iteration to print the number in the correct order
+        cout << rhs.value[rhs.value.size() - i - 1];
     }
     return os;
 }
@@ -161,12 +161,14 @@ bool operator==(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
     if (lhs.value.size() != rhs.value.size())
     {
+        // if the sizes are different, the numbers are different
         return false;
     }
     for (size_t i = 0; i < lhs.value.size(); i++)
     {
         if (lhs.value[i] != rhs.value[i])
         {
+            // if any of the digits are different, the numbers are different
             return false;
         }
 
@@ -177,20 +179,26 @@ bool operator==(const BigUnsigned& lhs, const BigUnsigned& rhs)
 bool operator!=(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
     return !(lhs == rhs);
+    // the negation of the equality operator
 }
 
 bool operator<(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
     if (lhs.value.size() > rhs.value.size())
     {
+        // if the size of the lhs is greater than the rhs, it is greater
         return false;
     }
     else if (lhs.value.size() < rhs.value.size())
     {
         return true;
+        // if the size of the lhs is less than the rhs, it is less
     }
     for (size_t i = 0; i < lhs.value.size(); i--)
     {
+        // if the sizes are the same, iterate through the digits
+        // from the most significant digit
+        // if the lhs digit is less than the rhs digit, the lhs is less
         if (lhs.value[i] < rhs.value[i])
         {
             return true;
@@ -201,6 +209,7 @@ bool operator<(const BigUnsigned& lhs, const BigUnsigned& rhs)
 
 bool operator>(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
+    // similar logic to the less than operator
     if (lhs.value.size() < rhs.value.size())
     {
         return false;
@@ -221,11 +230,13 @@ bool operator>(const BigUnsigned& lhs, const BigUnsigned& rhs)
 
 bool operator<=(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
+    // negation of the greater than operator
     return !(lhs > rhs);
 }
 
 bool operator>=(const BigUnsigned& lhs, const BigUnsigned& rhs)
 {
+    // negation of the less than operator
     return !(lhs < rhs);
 }
 
@@ -316,6 +327,8 @@ int main()
     cout << big4 << " is " << (big4 ? "true" : "false") << endl;
 } // main
 
+// returns the index of the first non-zero character in the string
+// used in the string constructor to skip leading zeros
 size_t firstNonZeroInStr(const string& str) {
     for (size_t i = 0; i < str.size(); i++) {
         if (i != 0) {
@@ -323,4 +336,10 @@ size_t firstNonZeroInStr(const string& str) {
         }
     }
     return 0;
+}
+
+// returns the larger of the two values
+// used in the addition operator to determine the size of the result
+size_t max(size_t a, size_t b) {
+    return (a > b) ? a : b;
 }
