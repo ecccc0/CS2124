@@ -13,6 +13,7 @@ public:
     virtual void makeSound() const = 0;
     friend ostream& operator<<(ostream& os, const Instrument& instr);
     virtual void display(ostream& os) const = 0;
+    virtual void play() const = 0;
 };
 
 ostream& operator<<(ostream& os, const Instrument& instr) {
@@ -21,7 +22,7 @@ ostream& operator<<(ostream& os, const Instrument& instr) {
 }
 
 void Instrument::makeSound() const {
-    cout << "To make a sound... " << endl;
+    cout << "To make a sound... ";
 }
 
 class Percussion : public Instrument {
@@ -35,14 +36,20 @@ public:
 class Drum : public Percussion {
 public:
     void display(ostream& os) const override {
-        os << "Drum";
+        os << "Drum" << endl;
+    }
+    void play() const override{
+        cout << "Boom\n";
     }
 };
 
 class Cymbal : public Percussion {
 public:
     void display(ostream& os) const override {
-        os << "Cymbal";
+        os << "Cymbal" << endl;
+    }
+    void play() const override{
+        cout << "Crash\n";
     }
 };
 
@@ -67,6 +74,9 @@ public:
         os << "Trombone";
         Brass::display(os);
     }
+    void play() const override{
+        cout << "Blat\n";
+    }
 };
 
 class Trumpet : public Brass {
@@ -75,6 +85,9 @@ public:
     void display(ostream& os) const override {
         os << "Trumpet";
         Brass::display(os);
+    }
+    void play() const override{
+        cout << "Toot\n";
     }
 };
 
@@ -102,6 +115,11 @@ public:
         os << "Cello";
         String::display(os);
     }
+
+    void play() const override {
+        cout << "Squawk\n";
+    }
+
 };
 
 class Violin : public String {
@@ -111,6 +129,10 @@ public:
     void display(ostream& os) const override {
         os << "Violin";
         String::display(os);
+    }
+
+    void play() const override{
+        cout << "Screech\n";
     }
 };
 
@@ -158,9 +180,16 @@ ostream& operator<<(ostream& os, const MILL& mill) {
         os << "None";
         return os;
     }
+    bool found_non_null = false;
     for (size_t i = 0; i < mill.inventory.size(); ++i) {
-        os << "    ";
-        os << *(mill.inventory[i]);
+        if (mill.inventory[i] != nullptr) {
+            os << "    ";
+            os << *(mill.inventory[i]);
+            found_non_null = true;
+        }
+    }
+    if (!found_non_null){
+        os << "None";
     }
     return os;
 }
@@ -194,15 +223,34 @@ public:
     //   Not making it const so that Instrument::play method does not
     //   need to be const. Allows the instrument to be modifed in the
     //   process of being played.
-    // void play() {
-    //     if (instr) instr->play();
+    void play() {
+        if (instr) instr->play();
     //     // Don't do anything if we don't have an instrument.
-    // }
+    }
 private:
     Instrument* instr;
     string name;
 };
 
+
+class Orch {
+public:
+    void play() {
+        for (size_t i = 0; i < musicians.size() ;++i) {
+            musicians[i]->play();
+        }
+    }
+    
+    void addPlayer(Musician &musician) {
+        musicians.push_back(&musician);
+    }
+
+
+private:
+    vector<Musician*> musicians;
+
+
+};
 
 int main() {
 
@@ -238,118 +286,122 @@ int main() {
     cout << endl;
   
     cout << "Define some Musicians------------------------------------------\n";
-    // Musician harpo("Harpo");
-    // Musician groucho("Groucho");
+    Musician harpo("Harpo");
+    Musician groucho("Groucho");
   	
     cout << "TESTING: groucho.acceptInstr(mill.loanOut());---------------\n";
-    // groucho.testPlay();	 // Groucho doesn't have an instrument yet.
+    groucho.testPlay();	 // Groucho doesn't have an instrument yet.
 
-    // groucho.acceptInstr(mill.loanOut());
-    // groucho.testPlay();
+    groucho.acceptInstr(mill.loanOut());
+    groucho.testPlay();
 
     cout << "\ndailyTestPlay()" << endl;
-    //mill.dailyTestPlay();
-    //cout << endl;
+    mill.dailyTestPlay();
+    cout << endl;
   
-    // groucho.testPlay();	
-    // mill.receiveInstr(*groucho.giveBackInstr());
-    // harpo.acceptInstr(mill.loanOut());
-    // groucho.acceptInstr(mill.loanOut());
-    // groucho.testPlay();
-    // harpo.testPlay();
+    groucho.testPlay();	
+    mill.receiveInstr(*groucho.giveBackInstr());
+    harpo.acceptInstr(mill.loanOut());
+    groucho.acceptInstr(mill.loanOut());
+    groucho.testPlay();
+    harpo.testPlay();
 
     cout << "\ndailyTestPlay()" << endl;
-    // mill.dailyTestPlay();
+    mill.dailyTestPlay();
 
     cout << "\nThe MILL after giving out some instruments:\n";
-    // cout << mill << "\n\n";
+    cout << mill << "\n\n";
 
     cout << "TESTING: mill.receiveInstr(*groucho.giveBackInstr()); ------\n";
-    //mill.receiveInstr(*groucho.giveBackInstr());
+    mill.receiveInstr(*groucho.giveBackInstr());
 
     cout << "TESTING: mill.receiveInstr(*harpo.giveBackInstr()); ------\n";
-    //mill.receiveInstr(*harpo.giveBackInstr());
-    //cout << endl;
+    mill.receiveInstr(*harpo.giveBackInstr());
+    cout << endl;
 
     cout << "dailyTestPlay()" << endl;
-    //    mill.dailyTestPlay();
+       mill.dailyTestPlay();
   
     cout << "\nThe MILL at the end of Part One:\n";
-    // cout << mill << endl;
+    cout << mill << endl;
 
-    //
-    // PART TWO
-    //
-    // cout << "\nP A R T  T W O\n";
     
-    // Musician bob("Bob");
-    // Musician sue("Sue");
-    // Musician mary("Mary");
-    // Musician ralph("Ralph");
-    // Musician jody("Judy");
-    // Musician morgan("Morgan");
+    // PART TWO
+    
+    cout << "\nP A R T  T W O\n";
+    
+    Musician bob("Bob");
+    Musician sue("Sue");
+    Musician mary("Mary");
+    Musician ralph("Ralph");
+    Musician jody("Judy");
+    Musician morgan("Morgan");
 
-    // // Orch orch;
+    Orch orch;
 
     // // THE SCENARIO
 
     // //Bob joins the orchestra without an instrument.
-    // orch.addPlayer(bob);
+    orch.addPlayer(bob);
 
     // //The orchestra performs
-    // cout << "orch performs\n";
-    // orch.play();
+    cout << "orch performs\n";
+    orch.play();
+    // ...
 
     // //Sue gets an instrument from the MIL2 and joins the orchestra.
-    // sue.acceptInstr(mill.loanOut());
-    // orch.addPlayer(sue);
+    sue.acceptInstr(mill.loanOut());
+    orch.addPlayer(sue);
 
     // //Ralph gets an instrument from the MIL2.
-    // ralph.acceptInstr(mill.loanOut());
+    ralph.acceptInstr(mill.loanOut());
 
     // //Mary gets an instrument from the MIL2 and joins the orchestra.
-    // mary.acceptInstr(mill.loanOut());
-    // orch.addPlayer(mary);
+    mary.acceptInstr(mill.loanOut());
+    orch.addPlayer(mary);
 
-    // //Ralph returns his instrument to the MIL2.
-    // mill.receiveInstr(*ralph.giveBackInstr());
+    //Ralph returns his instrument to the MIL2.
+    mill.receiveInstr(*ralph.giveBackInstr());
 
     // //Jody gets an instrument from the MIL2 and joins the orchestra.
-    // jody.acceptInstr(mill.loanOut());
-    // orch.addPlayer(jody);
+    jody.acceptInstr(mill.loanOut());
+    orch.addPlayer(jody);
 
     // // morgan gets an instrument from the MIL2
-    // morgan.acceptInstr(mill.loanOut());
+    morgan.acceptInstr(mill.loanOut());
 
     // //The orchestra performs.
-    // cout << "orch performs\n";
-    // orch.play();
+    cout << "orch performs\n";
+    orch.play();
+    // ScreechBlatToot
 
     // //Ralph joins the orchestra.
-    // orch.addPlayer(ralph);
+    orch.addPlayer(ralph);
 
     // //The orchestra performs.
-    // cout << "orch performs\n";
-    // orch.play();
-	
+    cout << "orch performs\n";
+    orch.play();
+	// ScreechBlatToot
     // // bob gets an instrument from the MIL2
-    // bob.acceptInstr(mill.loanOut());
+    bob.acceptInstr(mill.loanOut());
 
     // // ralph gets an instrument from the MIL2
-    // ralph.acceptInstr(mill.loanOut());
+    ralph.acceptInstr(mill.loanOut());
 
     // //The orchestra performs.
-    // cout << "orch performs\n";
-    // orch.play();
-
+    cout << "orch performs\n";
+    orch.play();
+    // SquawkScreechBlatTootCrash
     // //Morgan joins the orchestra.
-    // orch.addPlayer(morgan);
+    orch.addPlayer(morgan);
 
     // //The orchestra performs.
-    // cout << "orch performs\n";
-    // orch.play();
+    cout << "orch performs\n";
+    orch.play();
+    // SquawkScreechBlatTootCrashBoom
 
-    //cout << endl << mill << endl;
+
+    cout << endl << mill << endl;
 
 }
 
