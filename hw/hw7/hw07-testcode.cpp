@@ -3,16 +3,17 @@
  */
 
 // Comment out these two includes for the single file solution
-//#include "Noble.h"
-//#include "Warrior.h"
+#include "Noble.h"
+#include "Warrior.h"
 
 #include <iostream>
 #include <vector>
 #include <string>
+// #include "hw07-single.cpp"
 using namespace std;
 
 // Comment out this "using namespace" for the single file solution
-//using namespace WarriorCraft;
+using namespace WarriorCraft;
 
 int main() {
     Noble art("King Arthur");
@@ -52,6 +53,7 @@ int main() {
 
     art.fire(cheetah);
     wizard.runaway();
+    
     cout << endl << art << endl;
 
     art.battle(lance);
