@@ -61,19 +61,53 @@ void reverseInPlace(Node*& hp) {
 //Node* isSublist(Node* pattern, Node* target);
 
 const Node* isSublist(const Node* pattern, const Node* target) {
-    
+    if (pattern == nullptr) {
+        return target;
+    }
+    for (const Node* p = target; p != nullptr; p = p->next) {
+        const Node* pPattern = pattern;
+        const Node* pTarget = p;
+        while (pPattern != nullptr && pTarget != nullptr && pPattern->data == pTarget->data) {
+            if (pPattern->next == nullptr) {
+                return p;
+            }
+            pPattern = pPattern->next;
+            pTarget = pTarget->next;
+        }
+    }
+    return nullptr;
 }
 
 // test the nodes in listB looking for the first one to match a node
 // from listA. Note that we are matching the addresses of the nodes,
 // not the data they hold.
 //Node* sharedListBruteForce(Node* listA, Node* listB);
-const Node* sharedListBruteForce(const Node* listA, const Node* listB);
+const Node* sharedListBruteForce(const Node* listA, const Node* listB) {
+    for (const Node* pi = listA; pi != nullptr; pi = pi->next) {
+        for (const Node* pj = listB; pj != nullptr; pj = pj->next) {
+            if (pi == pj) {
+                return pi;
+            }
+        }
+    }
+    return nullptr;
+}
 
 // Use an "unordered set", i.e. a hashtable, to identify the first
 // element in listB that is also in listA.
 //Node* sharedListUsingSet(Node* listA, Node* listB);
-const Node* sharedListUsingSet(const Node* listA, const Node* listB);
+const Node* sharedListUsingSet(const Node* listA, const Node* listB) {
+    unordered_set<const Node*> nodeSet;
+    for (const Node* pi = listA; pi != nullptr; pi = pi->next) {
+        nodeSet.insert(pi);
+    }
+    for (const Node* pi = listB; pi != nullptr; pi = pi->next) {
+        if (nodeSet.find(pi) != nodeSet.end()) {
+            return pi;
+        }
+    }
+    return nullptr;
+}
 
 
 
@@ -157,7 +191,6 @@ int main() {
     // Attempt Match: 
     m1 = nullptr;
     match(target, m1);
-
     cout << "Task Three\n";
     cout << "Target: ";
     listPrint(target);
@@ -169,7 +202,7 @@ int main() {
     listPrint(sharedListUsingSet(target, target));
 
     cout << "Matching target against dup of self:\n";
-    //Node* dupOfTarget = listDup(target);
+    // Node* dupOfTarget = listDup(target);
     Node* dupOfTarget = listBuild({1, 2, 3, 2, 3, 2, 4, 5, 6});
     cout << "Brute force: ";
     listPrint(sharedListBruteForce(target, dupOfTarget));
@@ -214,6 +247,7 @@ int main() {
 //
 
 // match the target with the pattern. Calls isSublist to do the work.
+
 void match(const Node* target, const Node* pattern)
 {
     cout << "Attempt pattern: ";
