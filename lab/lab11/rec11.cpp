@@ -59,19 +59,9 @@ void reverseInPlace(Node*& hp) {
 // in that order in target?
 // Return the position where a match is found, otherwise null.
 //Node* isSublist(Node* pattern, Node* target);
+
 const Node* isSublist(const Node* pattern, const Node* target) {
-    for (const Node* p = target; p != nullptr; p = p->next) {
-        const Node* pTarget = p;
-        const Node* pPattern = pattern;
-        while (pPattern != nullptr && pTarget != nullptr && pPattern->data == pTarget->data) {
-            pPattern = pPattern->next;
-            pTarget = pTarget->next;
-        }
-        if (pPattern == nullptr) {
-            return p;
-        }
-    }
-    return nullptr;
+    
 }
 
 // test the nodes in listB looking for the first one to match a node
