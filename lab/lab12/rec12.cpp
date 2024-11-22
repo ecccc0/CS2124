@@ -6,12 +6,43 @@
 using namespace std;
 
 class List {
+    struct Node {
+        int data;
+        Node* prev;
+        Node* next;
+    };
 public:
-    List(): head(new Node(-1, nullptr, nullptr)), 
-        tail(new Node(-1, nullptr, nullptr)), len(0) {}
+    List(): head(new Node{-1, nullptr, nullptr}), 
+        tail(new Node{-1, head, nullptr}), len(0) {
+            head->next = tail;
+        }
+
+    List(const List& other): head(new Node{-1, nullptr, nullptr}),
+        tail(new Node{-1, head, nullptr}), len(0) {
+        head->next = tail;
+        for (Node* curr = other.head->next; curr != other.tail; curr = curr->next) {
+            push_back(curr->data);
+        }
+    }
+
+    ~List() {
+        clear();
+        delete head;
+        delete tail;
+    }
+
+    List& operator=(const List& other) {
+        if (this != &other) {
+            clear();
+            for (Node* curr = other.head->next; curr != other.tail; curr = curr->next) {
+                push_back(curr->data);
+            }
+        }
+        return *this;
+    }
 
     void push_back(int data) {
-        Node* newNode = new Node(data, tail->prev, tail);
+        Node* newNode = new Node{data, tail->prev, tail};
         tail->prev->next = newNode;
         tail->prev = newNode;
         len++;
@@ -26,46 +57,131 @@ public:
         len--;
     }
 
-int front() const {
-    return head->next->data;
-}
-
-int& front() {
-    return head->next->data;
-}
-
-int back() const {
-    return tail->prev->data;
-}
-
-int& back() {
-    return tail->prev->data;
-}
-
-size_t size() const {
-    return len;
-}
-
-friend ostream& operator<<(ostream& os, const List& list) {
-    Node* curr = list.head->next;
-    os << "{";
-    while (curr != list.tail) {
-        os << curr->data;
-        if (curr->next != list.tail) os << ", ";
-        curr = curr->next;
+    const int front() const {
+        return head->next->data;
     }
-    os << "}";
-    return os;
-}
+
+    int& front() {
+        return head->next->data;
+    }
+
+    const int back() const {
+        return tail->prev->data;
+    }
+
+    int& back() {
+        return tail->prev->data;
+    }
+
+    size_t size() const {
+        return len;
+    }
+
+    friend ostream& operator<<(ostream& os, const List& list) {
+        Node* curr = list.head->next;
+        while (curr != list.tail) {
+            os << curr->data;
+            if (curr->next != list.tail) os << " ";
+            curr = curr->next;
+        }
+        return os;
+    }
+
+    void push_front(int data) {
+        Node* newNode = new Node{data, head, head->next};
+        head->next->prev = newNode;
+        head->next = newNode;
+        len++;
+    }
+
+    void pop_front() {
+        if (head->next == tail) return;
+        Node* toDelete = head->next;
+        head->next = toDelete->next;
+        toDelete->next->prev = head;
+        delete toDelete;
+        len--;
+    }
+
+    void clear() {
+        while (head->next != tail) {
+            pop_front();
+        }
+    }
+
+    const int operator[](size_t index) const {
+        Node* curr = head->next;
+        for (size_t i = 0; i < index; ++i) {
+            curr = curr->next;
+        }
+        return curr->data;
+    }
+
+    int& operator[](size_t index) {
+        Node* curr = head->next;
+        for (size_t i = 0; i < index; ++i) {
+            curr = curr->next;
+        }
+        return curr->data;
+    }
+
+    class Iterator {
+        friend class List;
+    public:
+        Iterator(Node* node): curr(node) {}
+        Iterator& operator++() {
+            if (curr != nullptr) {
+                curr = curr->next;
+            }
+            return *this;
+        }
+
+        Iterator& operator--() {
+            if (curr != nullptr) {
+                curr = curr->prev;
+            }
+            return *this;
+        }
+        
+        friend bool operator==(const Iterator& lhs, const Iterator& rhs);
+        friend bool operator!=(const Iterator& lhs, const Iterator& rhs);
+
+        int& operator*() {
+            return curr->data;
+        }
+
+    private:
+        Node* curr;
+        
+    };
+
+    Iterator begin() {
+        return Iterator(head->next);
+    }
+
+    Iterator end() {
+        return Iterator(tail);
+    }
+
+    Iterator insert(Iterator iter, int data) {
+        Node* newNode = new Node{data, iter.curr->prev, iter.curr};
+        iter.curr->prev->next = newNode;
+        iter.curr->prev = newNode;
+        len++;
+        return Iterator(newNode);
+    }
+
+    Iterator erase(Iterator iter) {
+        Node* toDelete = iter.curr;
+        iter.curr->prev->next = iter.curr->next;
+        iter.curr->next->prev = iter.curr->prev;
+        iter.curr = iter.curr->next;
+        delete toDelete;
+        len--;
+        return iter;
+    }
 
 private:
-    struct Node {
-        Node(int data = 0, Node* prev = nullptr, Node* next = nullptr)
-            : data(data), prev(prev), next(next) {}
-        int data;
-        Node* prev;
-        Node* next;
-    };
     Node* head;
     Node* tail;
     size_t len;
@@ -80,10 +196,12 @@ void printListInfo(const List& myList) {
 }
 
 // The following should not compile. Check that it does not.
+/*
 void changeFrontAndBackConst(const List& theList) {
     theList.front() = 17;
     theList.back() = 42;
 }
+*/
 
 void changeFrontAndBack(List& theList) {
     theList.front() = 17;
@@ -179,7 +297,6 @@ int main() {
     myList[2] = 42;
     printListSlow(myList);
     
-
     // Task 5
     cout << "\n------Task Five------\n";
     cout << "Fill empty list with push_back: i*i for i from 0 to 9\n";
@@ -192,12 +309,11 @@ int main() {
     cout << "And again using the iterator type directly:\n";
     // Note you can choose to nest the iterator class or not, your choice.
     //for (iterator iter = myList.begin(); iter != myList.end(); ++iter) {
-    for (List::iterator iter = myList.begin(); iter != myList.end(); ++iter) {
+    for (List::Iterator iter = myList.begin(); iter != myList.end(); ++iter) {
         cout << *iter << ' ';
     }
     cout << endl;
     cout << "WOW!!! (I thought it was cool.)\n";
-    
     // Task 6
     cout << "\n------Task Six------\n";
     cout << "Filling an empty list with insert at end: i*i for i from 0 to 9\n";
@@ -211,7 +327,7 @@ int main() {
     printListInfo(myList);
     // ***Need test for insert other than begin/end***
     cout << "===================\n";
-
+    
     // Task 7
     cout << "\n------Task Seven------\n";
     cout << "Filling an empty list with insert at end: i*i for i from 0 to 9\n";
@@ -224,7 +340,7 @@ int main() {
     }
     // ***Need test for erase other than begin/end***
     cout << "===================\n";
-
+    
     // Task 8
     cout << "\n------Task Eight------\n";
     cout << "Copy control\n";
@@ -236,11 +352,15 @@ int main() {
     doNothing(myList);
     cout << "Back from doNothing(myList)\n";
     printListInfo(myList);
-
+    
     cout << "Filling listTwo with insert at begin: i*i for i from 0 to 9\n";
     List listTwo;
-    for (int i = 0; i < 10; ++i) listTwo.insert(listTwo.begin(), i*i);
+    for (int i = 0; i < 10; ++i) {
+        listTwo.insert(listTwo.begin(), i*i);
+    }
+    
     printListInfo(listTwo);
+    
     cout << "listTwo = myList\n";
     listTwo = myList;
     cout << "myList: ";
@@ -248,4 +368,13 @@ int main() {
     cout << "listTwo: ";
     printListInfo(listTwo);
     cout << "===================\n";
+    
+}
+
+bool operator==(const List::Iterator& lhs, const List::Iterator& rhs) {
+    return lhs.curr == rhs.curr;
+}
+
+bool operator!=(const List::Iterator& lhs, const List::Iterator& rhs) {
+    return ! (lhs == rhs);
 }
