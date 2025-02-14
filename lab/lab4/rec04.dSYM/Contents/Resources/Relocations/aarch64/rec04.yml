@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/eric/dev/CS2124/lab/lab4/rec04'
+relocations:     []
+...
