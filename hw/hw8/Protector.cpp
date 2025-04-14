@@ -11,6 +11,8 @@ namespace WarriorCraft {
     Protector::Protector(const std::string& name, double strength)
         : name(name), strength(strength), employer(nullptr), alive(true) {}
 
+    Protector::~Protector() {}
+
     const std::string& Protector::getName() const {
         return name;
     }
@@ -55,12 +57,6 @@ namespace WarriorCraft {
 
 
     // Derived class Wizard
-    class Wizard : public Protector {
-    public:
-        Wizard(const std::string& name, double strength);
-        void defend() const override;
-    };
-
     Wizard::Wizard(const std::string& name, double strength)
         : Protector(name, strength) {}
 
@@ -70,20 +66,11 @@ namespace WarriorCraft {
     }
 
     // Abstract class Warrior
-    class Warrior : public Protector {
-    public:
-        Warrior(const std::string& name, double strength);
-    };
 
     Warrior::Warrior(const std::string& name, double strength)
         : Protector(name, strength) {}
 
     // Derived class Archer
-    class Archer : public Warrior {
-    public:
-        Archer(const std::string& name, double strength);
-        void defend() const override;
-    };
 
     Archer::Archer(const std::string& name, double strength)
         : Warrior(name, strength) {}
@@ -95,11 +82,6 @@ namespace WarriorCraft {
     }
 
     // Derived class Swordsman
-    class Swordsman : public Warrior {
-    public:
-        Swordsman(const std::string& name, double strength);
-        void defend() const override;
-    };
 
     Swordsman::Swordsman(const std::string& name, double strength)
         : Warrior(name, strength) {}

@@ -10,6 +10,8 @@ namespace WarriorCraft {
     // Abstract base class Noble
     Noble::Noble(const std::string& name) : name(name), alive(true) {}
 
+    Noble::~Noble() {}
+
     const std::string& Noble::getName() const {
         return name;
     }
