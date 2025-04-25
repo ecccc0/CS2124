@@ -90,22 +90,22 @@ void demoLambdaCapture(int divisor) {
 }
 
 // Task 19: ourFind for list of ints
-list<int>::iterator ourFind(list<int>& lst, int value) {
+list<int>::iterator ourFind(list<int>::iterator begin, list<int>::iterator end, int value) {
     cout << "Using ourFind for list" << endl;
-    for (list<int>::iterator it = lst.begin(); it != lst.end(); ++it) {
+    for (list<int>::iterator it = begin; it != end; ++it) {
         if (*it == value) return it;
     }
-    return lst.end();
+    return end;
 }
 
 // Task 20: templated ourFind
-template <typename Container>
-auto ourFindTemplate(const Container& c, const typename Container::value_type& value) -> decltype(c.begin()) {
+template <typename Iterator, typename T>
+Iterator ourFindTemplate(Iterator begin, Iterator end, const T& value) {
     cout << "Using ourFindTemplate" << endl;
-    for (auto it = c.begin(); it != c.end(); ++it) {
+    for (Iterator it = begin; it != end; ++it) {
         if (*it == value) return it;
     }
-    return c.end();
+    return end;
 }
 
 int main() {
@@ -138,7 +138,7 @@ int main() {
 
     // 5. Attempt to print every other element of the list using the
     //    same technique.
-    cout << "Task 5: (won't compile: no operator[] for list)" << endl;
+    cout << "Task 5: (Deleted)" << endl;
     // for (size_t i = 0; i < lst.size(); i += 2) cout << lst[i] << " ";
     cout << "=======" << endl;
 
@@ -168,7 +168,9 @@ int main() {
     // 8. Sorting a list
     cout << "Task 8:" << endl;
     lst.sort();
-    cout << "Sorted list: "; for (int x : lst) cout << x << " "; cout << endl;
+    cout << "Sorted list: "; 
+    for (int x : lst) cout << x << " ";
+    cout << endl;
     cout << "=======" << endl;
 
     // 9. Calling the function to print the list
@@ -191,66 +193,98 @@ int main() {
     printAlternateAuto(lst);
     cout << "=======" << endl;
 
-    // Task 12: find in list (no auto)
     cout << "Task 12:" << endl;
-    auto it12 = findInList(lst, 4);
-    cout << (it12 != lst.end() ? to_string(*it12) : string("not found")) << endl;
+    list<int>::const_iterator it12 = findInList(lst, 4);
+    if (it12 != lst.end()) {
+        cout << *it12 << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     cout << "=======" << endl;
 
-    // Task 13: find in list (auto return)
     cout << "Task 13:" << endl;
     auto it13 = findInListAutoReturn(lst, 9);
-    cout << (it13 != lst.end() ? to_string(*it13) : string("not found")) << endl;
+    if (it13 != lst.end()) {
+        cout << *it13 << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     cout << "=======" << endl;
 
-    // Task 14: generic find
     cout << "Task 14:" << endl;
     auto it14 = find(v.begin(), v.end(), 6);
-    cout << (it14 != v.end() ? to_string(*it14) : string("not found")) << endl;
+    if (it14 != v.end()) {
+        cout << *it14 << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     cout << "=======" << endl;
 
-    // Task 15: find_if
     cout << "Task 15:" << endl;
     auto isEven = [](int x){ return x % 2 == 0; };
     auto it15v = find_if(v.begin(), v.end(), isEven);
-    cout << "First even in v: " << (it15v != v.end() ? to_string(*it15v) : string("none")) << endl;
+    if (it15v != v.end()) {
+        cout << "First even in v: " << *it15v << endl;
+    } else {
+        cout << "First even in v: none" << endl;
+    }
     auto it15l = find_if(lst.begin(), lst.end(), isEven);
-    cout << "First even in lst: " << (it15l != lst.end() ? to_string(*it15l) : string("none")) << endl;
+    if (it15l != lst.end()) {
+        cout << "First even in lst: " << *it15l << endl;
+    } else {
+        cout << "First even in lst: none" << endl;
+    }
     cout << "=======" << endl;
 
-    // Task 16: lambdas demo
     cout << "Task 16:" << endl;
     demoLambdas();
     cout << "=======" << endl;
 
-    // Task 17: lambda capture
     cout << "Task 17:" << endl;
     demoLambdaCapture(3);
     cout << "=======" << endl;
 
-    // Task 18: copy to dynamic array
     cout << "Task 18:" << endl;
     int* arr = new int[v.size()];
     copy(v.begin(), v.end(), arr);
-    cout << "Array: "; for (size_t i = 0; i < v.size(); ++i) cout << arr[i] << " "; cout << endl;
+    cout << "Array: "; 
+    for (size_t i = 0; i < v.size(); ++i) { 
+        cout << arr[i] << " "; 
+    }
+    cout << endl;
     auto it18 = find(arr, arr + v.size(), 4);
-    cout << (it18 != arr + v.size() ? to_string(*it18) : string("not found")) << endl;
+    if (it18 != arr + v.size()) {
+        cout << *it18 << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     delete[] arr;
     cout << "=======" << endl;
 
-    // Task 19: ourFind
     cout << "Task 19:" << endl;
     list<int> lst19 = lst;
-    auto it19 = ourFind(lst19, 2);
-    cout << (it19 != lst19.end() ? to_string(*it19) : string("not found")) << endl;
+    auto it19 = ourFind(lst19.begin(), lst19.end(), 2);
+    if (it19 != lst19.end()) {
+        cout << *it19 << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     cout << "=======" << endl;
 
     // Task 20: templated ourFind
     cout << "Task 20:" << endl;
-    auto it20v = ourFindTemplate(v, 5);
-    cout << (it20v != v.end() ? to_string(*it20v) : string("not found")) << endl;
-    auto it20l = ourFindTemplate(lst, 5);
-    cout << (it20l != lst.end() ? to_string(*it20l) : string("not found")) << endl;
+    auto it20v = ourFindTemplate(v.begin(), v.end(), 5);
+    if (it20v != v.end()) {
+        cout << *it20v << endl;
+    } else {
+        cout << "not found" << endl;
+    }
+    auto it20l = ourFindTemplate(lst.begin(), lst.end(), 5);
+    if (it20l != lst.end()) {
+        cout << *it20l << endl;
+    } else {
+        cout << "not found" << endl;
+    }
     cout << "=======" << endl;
 
     // Read tokens
@@ -274,7 +308,7 @@ int main() {
     // Task 22: distinct with set
     cout << "Task 22:" << endl;
     set<string> tokenSet(tokens.begin(), tokens.end());
-    cout << tokenSet.size() << " distinct words (sorted):\n";
+    cout << tokenSet.size() << " distinct words:\n";
     for (const auto& w : tokenSet) cout << w << " ";
     cout << endl << "=======" << endl;
 
