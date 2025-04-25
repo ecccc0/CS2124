@@ -132,8 +132,12 @@ public:
         iterator& operator++() { curr = curr->next; return *this; }
         iterator& operator--() { curr = curr->prev; return *this; }
         int& operator*() const { return curr->data; }
-        bool operator==(const iterator& other) const { return curr == other.curr; }
-        bool operator!=(const iterator& other) const { return !(*this == other); }
+        friend bool operator==(const iterator& lhs, const iterator& rhs) {
+            return lhs.curr == rhs.curr;
+        }
+        friend bool operator!=(const iterator& lhs, const iterator& rhs) {
+            return !(lhs == rhs);
+        }
     };
 
     iterator begin() { return iterator(header->next); }
